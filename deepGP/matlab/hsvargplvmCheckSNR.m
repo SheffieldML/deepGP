@@ -33,6 +33,7 @@ for i = 1:length(SNR)
     for j = 1:length(SNR{i})
         if ~isempty(SNR{i}(j)) && SNR{i}(j) <= errLimit
             errors = [errors '(' num2str(i) ',' num2str(j) ') '];
+            fprintf(1, 'SNR: Layer %d, modality %d: %f', i, j, SNR{i}(j))
         end
     end
 end
@@ -41,7 +42,6 @@ if ~isempty(errors)
     errMsg = 'Error! Low SNR in (layer/modality) pairs: ';
     errMsg = [errMsg errors];
     errMsg = [errMsg errStr];
-    hsvargplvmCheckSNR(hsvargplvmShowSNR(model));
     error(errMsg);
 else
     for i = 1:length(SNR)

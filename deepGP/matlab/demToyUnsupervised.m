@@ -34,6 +34,7 @@ initX = 'vargplvm';
 stackedInitIters = 200;
 stackedInitVardistIters = 100;
 stackedInitSNR = 100;
+initVardistIters = 100;
 demToyHsvargplvm1; % Run the actual demo
 
 %% --- Plot true data
@@ -50,18 +51,20 @@ plot(Ytr{2},'x-'); title('YB');
 
 %% -- Plot spaces discovered by deep GPs (two most dominant dimensions for
 %% top layer and similarly for each of the two modalities of layer 1)
+figure
 hsvargplvmShowScales(model);
 
 s2 = sort(vargplvmRetainedScales(model.layer{2}.comp{1}));
 sA =  sort(vargplvmRetainedScales(model.layer{1}.comp{1}));
 sB =  sort(vargplvmRetainedScales(model.layer{1}.comp{2}));
 
+figure
 subplot(2,2,1)
 myPlot(model.layer{2}.vardist.means(:,s2(1:2)),'deepGP_X2',[],[],{3,8},0)
 subplot(2,2,3)
 myPlot(model.layer{1}.vardist.means(:,sA(1:2)),'deepGP_XA',[],[],{3,8},0)
 subplot(2,2,4)
-myPlot(model.layer{2}.vardist.means(:,sB(1:2)),'deepGP_XB',[],[],{3,8},0)
+myPlot(model.layer{1}.vardist.means(:,sB(1:2)),'deepGP_XB',[],[],{3,8},0)
 
 
 %% --- Compare with stacked Bayesian GP-LVM % TODO

@@ -4,7 +4,7 @@ if nargin < 2 || isempty(displ)
 end
 
 % Layers to visualise
-layers = 1:model.H;
+layers = model.H:-1:1;
 
 % Do not show individual scales in mult-output
 skipComp = false;
@@ -28,7 +28,8 @@ if ~model.multOutput
 end
 %}
 
-for h=layers
+for hCount=1:length(layers)
+    h = layers(hCount);
     scalesAll{h} = zeros(1, model.layer{h}.q);
     if model.layer{h}.M > 10 && displ
         for i=1:model.layer{h}.M
@@ -42,7 +43,7 @@ for h=layers
         scalesAll{h} = scalesAll{h} ./ max(scalesAll{h});
     else
         if ~model.multOutput
-            subplot(model.H,1,h)
+            subplot(model.H,1,hCount)
         else
             figure
         end

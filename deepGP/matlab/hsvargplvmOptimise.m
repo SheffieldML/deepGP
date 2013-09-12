@@ -59,31 +59,32 @@ if display
 end
 options(14) = iters;
 
-if isfield(model, 'optimiser')
-    optim = str2func(model.optimiser);
-else
-    optim = str2func('scg');
+if iters > 0
+    if isfield(model, 'optimiser')
+        optim = str2func(model.optimiser);
+    else
+        optim = str2func('scg');
+    end  
+    
+    if strcmp(func2str(optim), 'optimiMinimize')
+        % Carl Rasmussen's minimize function
+        params = optim('hsvargplvmObjectiveGradient', params, options, model);
+    elseif strcmp(func2str(optim), 'scg2')
+        % NETLAB style optimization with a slight modification so that an
+        % objectiveGradient can be used where applicable, in order to re-use
+        % precomputed quantities.
+        [params, opt]= optim('hsvargplvmObjectiveGradient', params,  options, 'hsvargplvmGradient', model);
+        gradEvaluations = opt(11);
+        objEvaluations = opt(10);
+    else
+        % NETLAB style optimization.
+        [params, opt] = optim('hsvargplvmObjective', params,  options,  'hsvargplvmGradient', model);
+        gradEvaluations = opt(9);
+        objEvaluations = opt(10);
+    end
+    
+    model = hsvargplvmExpandParam(model, params);
+    
+    % Check SNR of optimised model
+    hsvargplvmCheckSNR(hsvargplvmShowSNR(model));
 end
-
-
-if strcmp(func2str(optim), 'optimiMinimize')
-    % Carl Rasmussen's minimize function
-    params = optim('hsvargplvmObjectiveGradient', params, options, model);
-elseif strcmp(func2str(optim), 'scg2')
-    % NETLAB style optimization with a slight modification so that an
-    % objectiveGradient can be used where applicable, in order to re-use
-    % precomputed quantities.
-    [params, opt]= optim('hsvargplvmObjectiveGradient', params,  options, 'hsvargplvmGradient', model);
-    gradEvaluations = opt(11);
-    objEvaluations = opt(10);
-else
-    % NETLAB style optimization.
-    [params, opt] = optim('hsvargplvmObjective', params,  options,  'hsvargplvmGradient', model);
-    gradEvaluations = opt(9);
-    objEvaluations = opt(10);
-end
-
-model = hsvargplvmExpandParam(model, params);
-
-% Check SNR of optimised model
-hsvargplvmCheckSNR(hsvargplvmShowSNR(model));

@@ -25,6 +25,7 @@ function [model, modelPruned, modelInitVardist] = hsvargplvmOptimiseModel(model,
 %
 % DEEPGP
 
+modelPruned = [];
 modelInitVardist = [];
 pruneModel = true;
 saveModel = true;

@@ -31,7 +31,7 @@ figure; hsvargplvmShowScales(model);
 % interesting... Here's a suggestion for the 5-layer model (experiment number 19)
 % (one starting point for each layer)..
 
-disp('#--- Sampling the latent space manually.');
+disp('#--- Sampling the latent space manually (use the mouse).');
 disp('    (If samples do not look like the ones of the next part -automatic sampling-')
 disp('     check that this demo sees the lvmVisualise* funcitons of mltools)')
 reply = input('# Do you want to skip this part? Y/N [N]: ', 's');
@@ -75,7 +75,7 @@ if strcmp(reply, 'N')
         lvmVisualiseGeneral(modelP,  [], 'imageVisualise', 'imageModify', false,[16 16], 1,0,1);
         axis off
         %model.comp{v}, [], 'imageVisualise', 'imageModify', [height width], 0,0,1);
-        fprintf('... Press any key to continue to next ')
+        fprintf('... When done, press any key to continue to next ')
         if i==length(layersToVisualise), fprintf('demo\n'), else fprintf('layer\n'); end
         pause
     end
@@ -197,7 +197,7 @@ if strcmp(reply, 'N')
     figure
     hsvargplvmShowScales(model);
     
-    fprintf('... Done!\n\n')
+    fprintf('... Done! Check figures... Proceeding to next demo... \n\n')
 end
 
 %% NN errors: (what matters mainly is the error on the top layer)

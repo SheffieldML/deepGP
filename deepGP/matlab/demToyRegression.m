@@ -206,7 +206,7 @@ model.globalOpt = globalOpt;
 model.parallel = globalOpt.enableParallelism;
 
 fprintf('# Scales after init. latent space:\n')
-hsvargplvmShowScales(modelInit,false);
+hsvargplvmShowScales(model,false);
 %%
 if exist('doGradchek') && doGradchek
     %model = hsvargplvmOptimise(model, true, itNo);
@@ -224,7 +224,7 @@ end
 
 %% ----- Run VGPDS
 if runVGPDS
-    % Temporary: just to print the hier.GPLVM and GP results before
+    % Temporary: just to print the hier.GPLVM (aka deep GP) and GP results before
     % training VGPDS
     runVGPDS = false;
     demToyDynamicsPredictions
