@@ -5,8 +5,11 @@ dataSetName = 'highFive';
 hsvargplvm_init;
 
 % Load data
-Yall{1} = vargplvmLoadData('hierarchical/demHighFiveHgplvm1',[],[],'YA');
-Yall{2} = vargplvmLoadData('hierarchical/demHighFiveHgplvm1',[],[],'YB');
+Y = vargplvmLoadData('demHighFiveHgplvm1');
+Yall{1} = Y.YA;
+Yall{2} = Y.YB;
+%Yall{1} = vargplvmLoadData('hierarchical/demHighFiveHgplvm1',[],[],'YA');
+%Yall{2} = vargplvmLoadData('hierarchical/demHighFiveHgplvm1',[],[],'YB');
 
 % Load pre-trained model
 try
