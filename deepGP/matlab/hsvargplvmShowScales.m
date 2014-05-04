@@ -8,7 +8,7 @@ layers = model.H:-1:1;
 
 % Do not show individual scales in mult-output
 skipComp = false;
-    
+
 if nargin > 2
     if ~isempty(varargin{1}), layers = varargin{1}; end
     if length(varargin) > 2 && ~isempty(varargin{2})
@@ -42,15 +42,19 @@ for hCount=1:length(layers)
         end
         scalesAll{h} = scalesAll{h} ./ max(scalesAll{h});
     else
-        if ~model.multOutput
-            subplot(model.H,1,hCount)
-        else
-            figure
+        if displ
+            if ~model.multOutput
+                subplot(model.H,1,hCount)
+            else
+                figure
+            end
         end
         scales{h} = svargplvmShowScales(model.layer{h}, displ);
-        title(['Layer ' num2str(h)]);
+        if displ
+            title(['Layer ' num2str(h)]);
+        end
     end
-   
+    
     if model.layer{h}.M > 10 && displ
         bar(scalesAll{h}); title(['Normalised sum of scales for layer ' num2str(h)])
     end

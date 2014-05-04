@@ -36,7 +36,7 @@ ___________________________________________________________________________
 ___________________________________________________________________________
 
 This is the implementation of a hierarchical variatioanl GPLVM, where
-instead of the standard one latent space, there's a hierarchy of those.
+instead of the standard single latent space, there's a hierarchy of those.
 As a sub-case, there is another difference from the standard model:
 instead of considering one observation space Y, we can choose to
 consider more. If we choose different subsets or modalities, [Y1, Y2],
@@ -89,7 +89,7 @@ latent nodes in a hierarchy. To summarize, in the full model we can select:
 
 
 
-    * First implementation of HSVARGPLVM (v. 0.1) 
+    * Current release of HSVARGPLVM (v. 1.0) 
     _______________________________________________________________________
     
     In the current implementation of hsvargplvm, we treat the intermediate

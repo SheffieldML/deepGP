@@ -30,6 +30,13 @@ objEvaluations = 0;
 
 options = optOptions;
 params = modelExtractParam(model);
+
+if isfield(model, 'throwSNRError') && model.throwSNRError
+    throwSNRError = true;
+else
+    throwSNRError = false;
+end
+
 if length(varargin) == 2
     if strcmp(varargin{1}, 'gradcheck')
         assert(islogical(varargin{2}));
@@ -86,5 +93,5 @@ if iters > 0
     model = hsvargplvmExpandParam(model, params);
     
     % Check SNR of optimised model
-    hsvargplvmCheckSNR(hsvargplvmShowSNR(model));
+    hsvargplvmCheckSNR(hsvargplvmShowSNR(model), [], [], throwSNRError);
 end

@@ -1,4 +1,4 @@
-deepGP v.0.1
+deepGP v.1.0
 ========
 
 Matlab code for deep Gaussian processes (Damianou and Lawrence, AISTATS 2013)

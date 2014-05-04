@@ -1,4 +1,4 @@
-function warnings = hsvargplvmCheckSNR(SNR, errLimit, warLimit)
+function warnings = hsvargplvmCheckSNR(SNR, errLimit, warLimit, throwError)
 % HSVARGPLVMCHECKSNR Check Signal to Noise Ratio after
 % optimisation, to ensure that the trivial local minimum
 % of learning only noise is avoided.
@@ -16,6 +16,7 @@ function warnings = hsvargplvmCheckSNR(SNR, errLimit, warLimit)
 %
 % DEEPGP
 
+if nargin < 4 || isempty(throwError), throwError = true; end 
 if nargin < 3 || isempty(warLimit), warLimit = 10; end
 if nargin < 2 || isempty(errLimit), errLimit = 2; end
 if nargin < 1, error('Not enough arguments given'); end
@@ -40,9 +41,11 @@ end
 
 if ~isempty(errors)
     errMsg = 'Error! Low SNR in (layer/modality) pairs: ';
-    errMsg = [errMsg errors];
-    errMsg = [errMsg errStr];
-    error(errMsg);
+    if throwError
+        errMsg = [errMsg errors];
+        errMsg = [errMsg errStr];
+        error(errMsg);
+    end
 else
     for i = 1:length(SNR)
         for j = 1:length(SNR{i})
