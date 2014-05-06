@@ -1,4 +1,4 @@
-deepGP v.0.1
+deepGP v.1.0
 ========
 
 Matlab code for deep Gaussian processes (Damianou and Lawrence, AISTATS 2013)
@@ -16,6 +16,6 @@ L2_distance ---- Isomap ---- GPmat ---- vargplvm ---- deepGP
 				Netlab ----------------
 
 Getting started:
- - Please check deepGP/html/index.html for a short overview of this package (TODO!).
+ - Please check deepGP/html/index.html for a short overview of this package.
  - Check deepGP/matlab/README.txt for a quick manual.
  - Check deepGP/matlab/tutorial.m for introductory demonstrations.
