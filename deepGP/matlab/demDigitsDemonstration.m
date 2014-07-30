@@ -100,11 +100,14 @@ dim = [2 8 5 6];
 %---
 
 fprintf('\n#--- Automatic sampling...\n')
-reply = input('# Do you want to skip this part? Y/N [N]: ', 's');
+reply = input('# Do you want to skip this part? Y/N/E(nd) [N]: ', 's');
 if isempty(reply)
     reply = 'N';
 end
 
+if strcmp(reply, 'E')
+    return
+end
 if strcmp(reply, 'N')
     for j = 1:length(layers)
         fprintf('# Sampling from layer %d, dimension %d... ', layers(j), dim(j))

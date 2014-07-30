@@ -1,6 +1,6 @@
 function hmodel = hsvargplvmModelCreate(Ytr, options, globalOpt, initXOptions)
 
-if nargin < 4
+if nargin < 4 || isempty(initXOptions)
     % These options are passed to the function that initialises X. If it's
     % pca or isomap it's empty, but there is also the possibility that e.g.
     % the model is optimised with stacked vargplvm, so this struct has any

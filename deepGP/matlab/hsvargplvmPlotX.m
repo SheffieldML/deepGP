@@ -24,6 +24,11 @@ if newFig
 else
     h=[]; hax=[];
 end
+if nargin < 2 || isempty(dims)
+    scales = hsvargplvmShowScales(model,0);
+    [~,ind]=sort(scales{layer}{1}, 'descend');
+    dims = ind(1:2);
+end
 if length(dims) > 3
     %error('Can only plot two or three dimensions against each other')
     for d=1:length(dims)
