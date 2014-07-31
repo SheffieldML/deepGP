@@ -1,13 +1,14 @@
 function [h, hax, hplot] = hsvargplvmPlotX(model, layer, dims, symb, theta, newFig, classes)
 % HSVARGPLVMPLOTX Plot the latent space for a selected layer and selected
-% pairs of dimensions
+% pairs of dimensions. 
 %
 % DESC Plot the latent space for a selected layer and selected
-% pairs of dimensions
+% pairs of dimensions. If the dimensions are not given in the third
+% argument (dims), then the two most dominant dimensions will be used.
 % 
 % FORMAT: hsvargplvmPlotX(model, layer, dims, <symb>, <theta>, <newFig>, <classes>)
 %
-% COPYRIGHT: Andreas C. Damianou, 2013
+% COPYRIGHT: Andreas C. Damianou, 2013, 2014
 %
 % DEEPGP
 
