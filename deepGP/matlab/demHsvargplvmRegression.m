@@ -85,6 +85,12 @@ if globalOpt.fixInducing && globalOpt.fixInducing
     end
 end
 
+
+%!!!!!!!!!!!!!!!!!!!!!!!!-----------------------
+if exist('DEBUG_entropy','var') && DEBUG_entropy
+    model.DEBUG_entropy = true;for itmp=1:model.H, model.layer{itmp}.DEBUG_entropy = true; end
+end
+        
 params = hsvargplvmExtractParam(model);
 model = hsvargplvmExpandParam(model, params);
 model.globalOpt = globalOpt;

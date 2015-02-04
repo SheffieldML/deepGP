@@ -76,9 +76,11 @@ if ~exist('globalOpt')
     % The values of this field are either strings, so that [@initX 'Embed']
     % is called, or it can be a matrix of an a priori computed latent space.
     % Other options for embedding:
-    % 'pca','isomap2','vargplvm','fgplvm','outputs'. The last requires that
+    % 'pca','isomap2','vargplvm','fgplvm','outputs','leafOutputs'. The 'outputs' requires that
     % Q==D and initialises X=Y where the data is scaled so that it's 0 mean
-    % 1 variance
+    % 1 variance (unless nondefault arguments are passed in stackedInitOpt). The
+    % 'leafOutputs' is similar to 'outputs', but X is init. with the output
+    % of the leaf layers, rather than the output of the current layer. 
     defaults.initX = 'ppca';
     
     % How to initialise the latent space of level h in case there are more than one
@@ -93,6 +95,14 @@ if ~exist('globalOpt')
     % "separately", but it implies that latentDimPerModel is a cell specifying
     % how many dimensions to use for each submodel.
     defaults.initial_X = 'concatenated';
+    
+    % Additional arguments passed to functions used to initialise the deep
+    % GP, e.g. if initX = 'vargplvm'.
+    defaults.stackedInitOpt = [];
+    
+    % If true, then SNR will be checked in each optimisation iteration to see
+    % that it's not too low.
+    defaults.checkSNR = false;
     
     % !! The latent space dimensionality in case there are several
     % modalities arises as follows:

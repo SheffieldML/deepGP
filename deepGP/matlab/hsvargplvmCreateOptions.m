@@ -45,6 +45,8 @@ for h=1:options.H
     for m = 1:M{h}
         if ~iscell(options.Kold)
             options.K{h}{m} = options.Kold;
+        else
+            options.K{h}{m} = options.Kold{h}{m}; %%% new
         end
         if options.K{h}{m} == -1
             options.K{h}{m} = N;

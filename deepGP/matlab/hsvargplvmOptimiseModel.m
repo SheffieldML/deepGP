@@ -36,7 +36,7 @@ if isfield(model, 'saveName')
     end
 end
 
-if isfield(model, 'globalOpt')
+if isfield(model, 'globalOpt') && ((nargin>2 && length(varargin)<3) || isempty(varargin{3}))
     globalOpt = model.globalOpt;
 else
     globalOpt = varargin{3};
@@ -69,6 +69,8 @@ display = 1;
 
 i=1;
 while ~isempty(globalOpt.initVardistIters(i:end)) || ~isempty(globalOpt.itNo(i:end))
+    model = hsvargplvmPropagateField(model,'initVardist', false, 1:model.H); % NEW
+    model = hsvargplvmPropagateField(model,'learnSigmaf', true, 1:model.H);  % NEW
     % do not learn beta for few iterations for intitilization
     if  ~isempty(globalOpt.initVardistIters(i:end)) && globalOpt.initVardistIters(i)
         %model.initVardist = 1; model.learnSigmaf = 0;
@@ -88,7 +90,7 @@ while ~isempty(globalOpt.initVardistIters(i:end)) || ~isempty(globalOpt.itNo(i:e
             else
                 fileName=vargplvmWriteResult(model, model.type, globalOpt.dataSetName, globalOpt.experimentNo);
             end
-            fprintf('# Saved model %s after optimising beta for %d iterations...\n\n', fileName,globalOpt.initVardistIters(i))
+            fprintf('# Saved model %s after initialising the var. distr. for %d iterations...\n\n', fileName,globalOpt.initVardistIters(i))
 
         end
         modelInitVardist=model;
@@ -100,8 +102,8 @@ while ~isempty(globalOpt.initVardistIters(i:end)) || ~isempty(globalOpt.itNo(i:e
 
     model.date = date;
     if  ~isempty(globalOpt.itNo(i:end)) && globalOpt.itNo(i)
-        model = hsvargplvmPropagateField(model,'initVardist', false, globalOpt.initVardistLayers);
-        model = hsvargplvmPropagateField(model,'learnSigmaf', true, globalOpt.initVardistLayers);
+         model = hsvargplvmPropagateField(model,'initVardist', false, 1:model.H); % NEW
+         model = hsvargplvmPropagateField(model,'learnSigmaf', true, 1:model.H);  % NEW
 
         iters = globalOpt.itNo(i); % Default: 1000
         fprintf(1,'# Optimising the model for %d iterations (session %d)...\n',iters,i);

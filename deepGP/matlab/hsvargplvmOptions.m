@@ -69,6 +69,9 @@ else
         optionsDyn.t = timeStampsTraining;
     end
     optionsDyn.kern = globalOpt.dynamicKern;
+    optionsDyn.initCovarMedian = globalOpt.dynamicsInitCovarMedian;
+    optionsDyn.initCovarMedianLowest = globalOpt.initCovarMedianLowest;
+    optionsDyn.initCovarMedianHighest = globalOpt.initCovarMedianHighest;
 end
 
 

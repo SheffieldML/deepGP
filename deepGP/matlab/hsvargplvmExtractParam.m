@@ -106,4 +106,10 @@ end
 
 
 
-
+% Make fixed indices to have an asterisk
+if returnNames && isfield(model, 'fixParamIndices')
+    for i = 1:length(model.fixParamIndices)
+        j = model.fixParamIndices(i);
+        names{j} = [names{j} '*'];
+    end
+end

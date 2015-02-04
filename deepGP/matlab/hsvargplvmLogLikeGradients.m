@@ -15,7 +15,33 @@ end
 if pool_open && (isfield(model,'parallel') && model.parallel)
     % Run the parallel version of the current function.
     g=hsvargplvmLogLikeGradientsPar(model);
+    % A 'dirty' trick to fix some parameters
+    if isfield(model, 'fixParamIndices') && ~isempty(model.fixParamIndices)
+        g(model.fixParamIndices) = 0;
+    end
     return
+end
+
+if (model.H == 1 && isfield(model.layer{1}, 'dynamics') && ~isempty(model.layer{1}.dynamics))
+    model.layer{1}.numModels = model.layer{1}.M;
+    for m = 1:length(model.layer{1}.comp)
+        model.layer{1}.comp{m}.vardist = model.layer{1}.vardist;
+        model.layer{1}.comp{m}.dynamics = model.layer{1}.dynamics;
+    end
+    g = svargplvmLogLikeGradients(model.layer{1});
+    %-----TMP
+%     mm = model.layer{1}.comp{1};
+%     mm.dynamics = model.layer{1}.dynamics;
+%     mm.vardist = model.layer{1}.vardist;
+%     pp = vargplvmExtractParam(mm);
+%     mm = vargplvmExpandParam(mm, pp);
+%     g = vargplvmLogLikeGradients(mm);
+    %---
+    % A 'dirty' trick to fix some parameters
+    if isfield(model, 'fixParamIndices') && ~isempty(model.fixParamIndices)
+        g(model.fixParamIndices) = 0;
+    end
+    return 
 end
 
 g_leaves = hsvargplvmLogLikeGradientsLeaves(model.layer{1});
@@ -30,8 +56,11 @@ g_leaves(1:model.layer{1}.vardist.nParams) = g_leaves(1:model.layer{1}.vardist.n
 
 
 
-
-g_entropies = hsvargplvmLogLikeGradientsEntropies(model.layer{1});
+if model.H > 1 % NEW
+    g_entropies = hsvargplvmLogLikeGradientsEntropies(model.layer{1});
+else
+    g_entropies = zeros(1,model.layer{1}.N*model.layer{1}.q);
+end
 
 % This is the gradient of the entropies (only affects covars). It's just -0.5*I
 N = model.layer{1}.N;
@@ -83,9 +112,15 @@ if ~dynUsed
     g(startInd:endInd) = g(startInd:endInd) + g_parent;
 end
 
+% A 'dirty' trick to fix some parameters
+if isfield(model, 'fixParamIndices') && ~isempty(model.fixParamIndices)
+    g(model.fixParamIndices) = 0;
+end
+
 
 end
 
+%---------------  HELPER LOCAL FUNCTIONS ------------------------------%
 
 % The derivatives for the leaves, ie only the likelihood part (no KL) of
 % the X^1 -> Y bayesian gplvm model (svargplvm, actually) of layer 1.
@@ -199,7 +234,7 @@ for h=2:model.H
         means = means(:, latInd);
         covars = covars(:, latInd);
         
-            %-- Amend the gShared OF THE PREVIOUS LAYER with the new terms due to the expectation
+        %-- Amend the gShared OF THE PREVIOUS LAYER with the new terms due to the expectation
         % If multOutput(h) is set, then the expectation of <\tilde{F}>_{q(X_{h-1}} will
         % be split into Q expectations wrt q(X_{h-1}(:,q)), q=1,...,Q. In
         % general (not tested yet!!!) it will not be grouped by q, but
@@ -269,8 +304,11 @@ end
 % The entropies of all variational distributions q(X^h) (this does not
 % include the parent var. distr q(Z), for which we need to instead
 % calculate a KL quantity.
-function g = hsvargplvmLogLikeGradientsEntropies(model)
-g=-0.5*ones(1,model.N * model.q);
+function g = hsvargplvmLogLikeGradientsEntropies(model)  
+g=0.5*ones(1,model.N * model.q);
+if isfield(model, 'DEBUG_entropy') && model.DEBUG_entropy
+    g = -g;
+end
 end
 
 

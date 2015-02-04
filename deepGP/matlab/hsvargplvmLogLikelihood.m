@@ -8,7 +8,6 @@ F_entropies = hsvargplvmLogLikelihoodEntropies(model);
 F_parent = hsvargplvmLogLikelihoodParent(model.layer{model.H});
 
 ll = F_leaves + F_nodes + F_entropies + F_parent;
-
 end
 
 % The ln p(Y|X) terms
@@ -39,8 +38,11 @@ function F_entropies = hsvargplvmLogLikelihoodEntropies(model)
 F_entropies = 0;
 for h=1:model.H-1
     vardist = model.layer{h}.vardist;
-    F_entropies = F_entropies - 0.5*(vardist.numData*vardist.latentDimension* ...
+    F_entropies = F_entropies + 0.5*(vardist.numData*vardist.latentDimension* ...
             (log(2*pi) + 1) + sum(sum(log(vardist.covars))));
+end
+if isfield(model, 'DEBUG_entropy') && model.DEBUG_entropy
+    F_entropies = - F_entropies;
 end
 
 end

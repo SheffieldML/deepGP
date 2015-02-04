@@ -12,7 +12,7 @@ function f = hsvargplvmObjective(params, model)
 % 
 % SEEALSO : hsvargplvmCreate, hsvargplvmLogLikelihood, hsvargplvmExpandParam
 %
-% COPYRIGHT : Andreas C. Damianoum 2012
+% COPYRIGHT : Andreas C. Damianou 2012
 
 % HSVARGPLVM
 

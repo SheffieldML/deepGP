@@ -38,6 +38,11 @@ pause
 clear; close all
 demToyUnsupervised; % Call to the demo
 
+fprintf(1, '\n\nWe can print the model with ''hsvargplvmDisplay(model)''.\n');
+fprintf('Press any key to display model:\n')
+pause
+hsvargplvmDisplay(model)
+
 fprintf('\n\n');
 
 

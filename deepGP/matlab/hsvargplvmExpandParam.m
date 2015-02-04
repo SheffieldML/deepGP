@@ -68,3 +68,16 @@ model.nParams = endVal;
 
 % Force kernel computations etc
 model = hsvargplvmUpdateStats(model);
+
+% Will check SNR in each iteration, to make sure it's OK
+if isfield(model, 'checkSNR') && model.checkSNR > 0
+     snr=hsvargplvmShowSNR(model,[],0);
+     for h=1:model.H
+         [wr,errs] = svargplvmCheckSNR(num2cell(snr{h}),[],[],0,0);
+         for m=1:model.layer{h}.M
+             if ~isempty(wr) || ~isempty(errs)
+                fprintf('# WARNING! Low SNR (%.2f) in layer/modality: %d/%d\n',snr{h}(m),h,m)
+             end
+         end
+     end
+end

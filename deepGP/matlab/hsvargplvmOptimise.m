@@ -48,7 +48,11 @@ if length(varargin) == 2
             d=norm(deltaf - gradient)/norm(gradient + deltaf); %%
             d1=norm(deltaf - gradient,1)/norm(gradient + deltaf,1); %%
             fprintf(1,' Norm1 difference: %d\n Norm2 difference: %d\n',d1,d);
-            grChek = {delta, d, d1};
+            grChek.delta = delta;
+            grChek.gradient = gradient;
+            grChek.deltaf = deltaf;
+            grChek.normDiff0 = d;
+            grChek.normDiff1 = d1;
         else
             grChek = [];
         end

@@ -5,6 +5,16 @@
 %
 % DEEPGP
 
+% ! Results obtained with this script:
+%{
+clear; experimentNo =  19;
+diaryFile = ['../LOGS/LOG_demUsps' num2str(experimentNo) '.txt']; delete(diaryFile); diary(diaryFile);
+H=5;   
+baseKern='rbfardjit'; Q = {15,12,10, 8, 6}; initSNR = {70,100, 300, 2000, 3000}; dataMerge = 'vercat2'; 
+K = 80; initVardistLayers = 1:5; initVardistIters = 500; itNo = [3000 3000]; demUsps;
+diary off
+%}
+
 % Experiment number 19 is the deepest architecture (5 layers)
 expNo = 19; % Other experiments: 10, 16
 
@@ -205,6 +215,7 @@ end
 
 %% NN errors: (what matters mainly is the error on the top layer)
 disp('#--- NN errors. Press any key to start...'); pause
+%{
 figure
 for h=1:model.H
     % order wrt to the inputScales
@@ -219,11 +230,12 @@ for h=1:model.H
     errors = fgplvmNearestNeighbour(mm, lbls);
     errors2 = fgplvmNearestNeighbour(mm2, lbls);
     % plot the two largest latent dimensions
-    ax=subplot(model.H,1,h);
+    figure; ax = axes;
+    %ax=subplot(model.H,1,h);
     lvmScatterPlot(mm2, lbls,ax); title(['Layer ' num2str(h) ' (errors:' num2str(errors) ')'])
     fprintf('# Vargplvm errors in the [%d-D | 2-D] projection: [%d | %d]\n', QQ,errors, errors2)
 end
-
+%}
 
 %% Visualise the latent space with the images
 

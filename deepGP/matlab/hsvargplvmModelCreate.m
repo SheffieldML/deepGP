@@ -63,7 +63,32 @@ for h = 1:options.H
        end
         mAll = [mAll m{i}];
     end
-    
+    % The following option is usually used for regression, and normally
+    % we'd set options.extraInit = model.layer{end}.dynamics.t, ie the
+    % inputs to the regression task. Then, if this initialisation is
+    % activated, the latent space X_1 will be learned from the
+    % concatenation of the outputs and the whole input space (if its
+    % dimensionality is smaller than this of the outputs, otherwise it'll
+    % be projected to a smaller space with pca) and then a projection of
+    % this given extraInit matrix to ceil(Q/2) dimensions will be repeated
+    % in every layer, ie layer X_2 will be initialised e.g. with pca on
+    % [X_1 ppcaEmbed(options.extraInit, ceil(Q/2)]. The intuition is that
+    % the inputs have to somehow be reflected in the latent space, and
+    % Duvenaud et al. showed that it might be good to repeat it in every
+    % layer to avoid heavy tailed gradients.
+    if isfield(options, 'extraInit') && ~isempty(options.extraInit)
+        if h == 1
+            fprintf('# Taking extra information for initialisation in every layer!\n')
+            assert(size(options.extraInit,1) == size(mAll,1));
+            if size(options.extraInit,2) > size(mAll,2)
+                tmp = ppcaEmbed(options.extraInit, size(mAll,2));
+            end
+        else
+            % Can be avoided if previous Q is also same size
+            tmp = ppcaEmbed(options.extraInit, ceil(Q/2));
+        end
+        mAll = [mAll tmp];
+    end
 
     
     if iscell(options.initX)
@@ -77,8 +102,19 @@ for h = 1:options.H
         if isstr(initX)
             fprintf('# Initialising level %d with %s\n',h, initX)
             initFunc = str2func([initX 'Embed']);
-            curX  = initFunc(mAll, Q, initXOptions{h}{:});
+            if strcmp(initX, 'leafOutputs')
+                % In this case we initialise with the leaf outputs, rather
+                % than with the outputs of the current layer.
+                if Q ~= size(hmodel.layer{1}.comp{1}.m,2)
+                    warning(['Q for layer ' num2str(h) ' was not set to leaf output dim, but leafOutput initialisation was selected! Fixing Q appropriately...'])
+                    Q = size(hmodel.layer{1}.comp{1}.m,2);
+                end
+                curX = outputsEmbed(hmodel.layer{1}.comp{1}.m, Q, initXOptions{h}{:});
+            else
+                curX  = initFunc(mAll, Q, initXOptions{h}{:});
+            end
         else
+            fprintf('# Initialising level %d with given initial X\n',h)
             curX = initX;
         end
     else % M > 1
@@ -235,3 +271,4 @@ hmodel.H = options.H;
 hmodel.options = options;
 hmodel.type = 'hsvargplvm';
 hmodel.parallel = globalOpt.enableParallelism;
+hmodel.checkSNR = globalOpt.checkSNR;

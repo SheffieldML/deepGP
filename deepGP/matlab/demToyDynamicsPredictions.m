@@ -34,15 +34,15 @@ errorRecDeepGP = sum(mean(abs(hsvargplvmPosteriorMeanVarSimple(model, TestmeansT
 errorRecDeepGPNoCovars = sum(mean(abs(hsvargplvmPosteriorMeanVarSimple(model, TestmeansTr)-Ytr{1}),1));
 
 fprintf('\n\n#### ERRORS:\n')
-try 
+try
     fprintf('# Error GP pred      : %.4f\n', errorGP);
     fprintf('# Error GPfitc pred  : %.4f\n', errorGPfitc);
 end
 fprintf('# Error DeepGP pred      : %.4f / %.4f (with/without covars)\n', errorDeepGP, errorDeepGPNoCovars);
 fprintf('# Error DeepGPInitPred   : %.4f\n',errorDeepGPIn);
 if runVGPDS
-fprintf('# Error VGPDS pred       : %.4f\n', errorVGPDS);
-fprintf('# Error VGPDSInVpred     : %.4f\n', errorVGPDSIn);
+    fprintf('# Error VGPDS pred       : %.4f\n', errorVGPDS);
+    fprintf('# Error VGPDSInVpred     : %.4f\n', errorVGPDSIn);
 end
 fprintf('\n')
 fprintf('# Error Mean             : %.4f\n', errorMean);
@@ -50,7 +50,7 @@ fprintf('# Error LinReg           : %.4f\n', errorLinReg);
 try, fprintf('# Error GP rec      : %.4f\n', errorRecGP);end
 fprintf('# Error DeepGP rec       : %.4f / %.4f (with/without covars)\n', errorRecDeepGP, errorRecDeepGPNoCovars);
 if runVGPDS
-fprintf('# Error VGPDS rec        : %.4f\n', errorRecVGPDS);
+    fprintf('# Error VGPDS rec        : %.4f\n', errorRecVGPDS);
 end
 %%
 %{
