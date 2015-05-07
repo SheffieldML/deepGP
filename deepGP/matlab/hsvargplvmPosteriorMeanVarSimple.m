@@ -1,15 +1,13 @@
-% This function is used for predicting in the hierarchical model.  
-% All intermediate mu and sigma should be returned, (TODO!!!)  or
-% the user can give extra arguments to define which outputs to get.
-
 % ARG model: the hsvargplvm model
 % ARG X: the test latent points of the TOP layer (parent)
 % ARG varX: the variance associated with X. Can be left empty ([])
-% ARG lInp: the layer we predict FROM, in the most general case the parent
-% ARG lOut: the layer we predict at, ie the prediction is propagated from
-% the lInp layer down to this layer.
-% ARG ind: If there are multiple output nodes in layer "layer", we predict
-% for the node(s) idexed with "ind", ie ind is a vector.
+
+% TODO: Replace vargplvmPosteriorMeanVarHier2 with
+% vargplvmPosteriorMeanVarHier which is an external function (check what
+% changes were made)
+
+% This function is very similar to hsvargplvmPosteriorMeanVar, but without
+% the extra arguments.
 
 function [mu, varsigma] = hsvargplvmPosteriorMeanVarSimple(model, X, varX)
 
@@ -25,16 +23,16 @@ varXall{H} = varX;
 
 for h=H-1:-1:1
     if ~isempty(varX)
-        [Xall{h} varXall{h}] = vargplvmPosteriorMeanVarHier(model.layer{h+1}.comp{1}, Xall{h+1}, varXall{h+1});
+        [Xall{h} varXall{h}] = vargplvmPosteriorMeanVarHier2(model.layer{h+1}.comp{1}, Xall{h+1}, varXall{h+1});
     else
-        [Xall{h} varXall{h}] = vargplvmPosteriorMeanVarHier(model.layer{h+1}.comp{1}, Xall{h+1});
+        [Xall{h} varXall{h}] = vargplvmPosteriorMeanVarHier2(model.layer{h+1}.comp{1}, Xall{h+1});
     end
 end
 
 if ~isempty(varX)
-    [mu, varsigma] = vargplvmPosteriorMeanVarHier(model.layer{1}.comp{1}, Xall{1}, varXall{1});
+    [mu, varsigma] = vargplvmPosteriorMeanVarHier2(model.layer{1}.comp{1}, Xall{1}, varXall{1});
 else
-    [mu, varsigma] = vargplvmPosteriorMeanVarHier(model.layer{1}.comp{1}, Xall{1});
+    [mu, varsigma] = vargplvmPosteriorMeanVarHier2(model.layer{1}.comp{1}, Xall{1});
 end
 
 
@@ -50,7 +48,7 @@ end
 % calculations involving model.m, because in the indermediate layers
 % model.m is replaced by the expectation varmu*varmu'+Sn wrt the X of the
 % bottom layer.
-function [mu, varsigma] = vargplvmPosteriorMeanVarHier(model, X, varX)
+function [mu, varsigma] = vargplvmPosteriorMeanVarHier2(model, X, varX)
 
 
 

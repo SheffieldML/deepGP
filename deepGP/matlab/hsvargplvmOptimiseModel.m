@@ -124,4 +124,5 @@ while ~isempty(globalOpt.initVardistIters(i:end)) || ~isempty(globalOpt.itNo(i:e
     end
     i = i+1;
 end
+model.optim.lastLogLik = modelLogLikelihood(model);
 

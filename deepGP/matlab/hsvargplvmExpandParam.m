@@ -11,8 +11,9 @@ startVal = 0;
 endVal = 0;
 for h=1:model.H %%% FOR EACH LAYER
     startVal = endVal + 1;
-    
+    dynUsed = false;
     if h==model.H & isfield(model.layer{h}, 'dynamics') & ~isempty(model.layer{h}.dynamics)
+        dynUsed = true;
         endVal = endVal + model.layer{h}.dynamics.nParams;
         model.layer{h}.dynamics = modelExpandParam(model.layer{h}.dynamics, params(startVal:endVal));
     else
@@ -62,7 +63,11 @@ for h=1:model.H %%% FOR EACH LAYER
         model.layer{h}.comp{m}.nParams = endVal - endValPrev;
         totLayerParams = totLayerParams + model.layer{h}.comp{m}.nParams;
     end
-    model.layer{h}.nParams = totLayerParams + model.layer{h}.vardist.nParams;
+    if dynUsed
+        model.layer{h}.nParams =  totLayerParams + model.layer{h}.dynamics.nParams;
+    else
+        model.layer{h}.nParams = totLayerParams + model.layer{h}.vardist.nParams;
+    end
 end
 model.nParams = endVal;
 

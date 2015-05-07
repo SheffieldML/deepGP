@@ -78,40 +78,40 @@ fprintf('\n# Press any key to start demo...\n')
 pause
 clear; close all
 pause(1)
-dFile = ['demoRegression1.txt']; % Diary file
-delete(dFile); diary(dFile)
+
 % File which stores the results
-fName = ['demoRegressionErrors.txt'];
-% Warped  GPs with temporal constraints
-runVGPDS=0;
+fName = './RESULT_demoRegressionErrors.txt';
+
 % Initialise the error vectors
 eGP = []; eGPfitc = []; eRecGP = []; eDeepGP = []; eDeepGPNoCovars = [];
-eDeepGPIn =[]; eRecDeepGP = []; eRecDeepGPNoCovars = []; eVGPDS = [];
-eVGPDSIn = []; eRecVGPDS = []; eMean = []; eLinReg = [];
+eDeepGPIn =[]; eRecDeepGP = []; eRecDeepGPNoCovars = []; eMean = []; eLinReg = [];
 for experimentNo=[1:15];
-	keep('fName', 'experimentNo', 'runVGPDS', 'eMean', 'eLinReg', 'eGP', 'eGPfitc', 'eRecGP', 'eDeepGP', 'eDeepGPNoCovars', 'eDeepGPIn', 'eRecDeepGP', 'eRecDeepGPNoCovars', 'eVGPDS', 'eVGPDSIn', 'eRecVGPDS');
+	keep('fName', 'experimentNo', 'eMean', 'eLinReg', 'eGP', 'eGPfitc', 'eRecGP', 'eDeepGP', 'eDeepGPNoCovars', 'eDeepGPIn', 'eRecDeepGP', 'eRecDeepGPNoCovars');
 	% Different random seed depending on the experiment id
     randn('seed', 6000+experimentNo); rand('seed', 6000+experimentNo);
-    % The kernel to be used in the uppermost level
-	dynamicKern = {'lin','white','bias'};
-    % Number of iterations performed for initialising the variational
-    % distribution, and number of training iterations
-	initVardistIters = 1100;  itNo = [2000 5000 2000 2000 2000 2000 2000 2000 2000];
-	H=2;  % Number of layers
-	initSNR = {100, 100}; % Initial Signal To Noise ration per layer
-    toyType='hierGpsNEW';
-	Ntr=25; Dtoy=10; % Number of training data and dimensionality of outputs
-	K=25; % Number of inducing points to use
-	Q=8; % Dimensionality of latent space (can potentially be different per layer)
-	initX='inputsOutputs'; % Initialise X with X0
-	learnInducing=1; % Learning the inducing points
-	runGP=1; runVGPDS=0;  % Compare with GPs and/or VGPD
-	errorInRun = 0; % Flag
+    errorInRun = 0; % Flag
 	try  
 		demToyRegression; % Run the main demo
 	catch e
-		errorInRun = 1;
-		fprintf(1, ['Error in experimentNo = ' num2str(experimentNo)])
+        if strcmp(e.identifier, 'hsvagplvm:checkSNR:lowSNR')
+            % If the previous optimisation resulted in low SNR and threw
+            % an error, try again but this time initialise the variational
+            % distribution for longer and with higher SNR.
+            fprintf(1, ['\n\n### Low SNR in experimentNo = ' num2str(experimentNo) ' !! Trying again...\n\n'])
+            keep('fName', 'experimentNo', 'eMean', 'eLinReg', 'eGP', 'eGPfitc', 'eRecGP', 'eDeepGP', 'eDeepGPNoCovars', 'eDeepGPIn', 'eRecDeepGP', 'eRecDeepGPNoCovars');
+            randn('seed', 6000+experimentNo); rand('seed', 6000+experimentNo);
+            initVardistIters = [2100 1600 1600];  itNo = [2000 repmat(1000, 1,13)];
+            initSNR = {150, 350};
+            errorInRun = 0; % Flag
+            try
+                demToyRegression
+            catch e
+                % If for a second time there's a problem with SNR, give up.
+                errorInRun = 1; fprintf(1, ['Error in experimentNo = ' num2str(experimentNo) ': ' e.message])
+            end
+        else
+            errorInRun = 1; fprintf(1, ['Error in experimentNo = ' num2str(experimentNo) ': ' e.message])
+        end
 	end
 	if ~errorInRun
         % Print on screen and in a file the diagnostics and errors
@@ -127,17 +127,11 @@ for experimentNo=[1:15];
 		eDeepGPIn = [eDeepGPIn errorDeepGPIn]; fprintf(ff, 'errorDeepGPIn = ['); fprintf(ff, '%.4f ', eDeepGPIn); fprintf(ff,'];\n');
 		eRecDeepGP = [eRecDeepGP errorRecDeepGP]; fprintf(ff, 'errorRecDeepGP = ['); fprintf(ff, '%.4f ', eRecDeepGP); fprintf(ff,'];\n');
 		eRecDeepGPNoCovars = [eRecDeepGPNoCovars errorRecDeepGPNoCovars]; fprintf(ff, 'errorRecDeepGPNoCovars = ['); fprintf(ff, '%.4f ', eRecDeepGPNoCovars); fprintf(ff,'];\n');
-		if runVGPDS
-			eVGPDS = [eVGPDS errorVGPDS]; fprintf(ff, 'errorVGPDS = ['); fprintf(ff, '%.4f ', eVGPDS); fprintf(ff,'];\n');
-			eVGPDSIn = [eVGPDSIn errorVGPDSIn]; fprintf(ff, 'errorVGPDSIn = ['); fprintf(ff, '%.4f ', eVGPDSIn); fprintf(ff,'];\n');
-			eRecVGPDS = [eRecVGPDS errorRecVGPDS]; fprintf(ff, 'errorRecVGPDS = ['); fprintf(ff, '%.4f ', eRecVGPDS); fprintf(ff,'];\n');
-		end
 		fclose(ff);
 	end
 end
-diary off
 
-%%% Plots
+% Plots
 fprintf('\n\n');
 tt = 1:length(eMean);
 plotFields = {'eMean','eLinReg','eGP', 'eGPfitc', 'eDeepGP'};
@@ -149,6 +143,7 @@ end
 legend(plotFields);
 
 fprintf('\n\n');
+
 
 
 %% --------  Collection of demos on digit data (demonstration) ----------------------%

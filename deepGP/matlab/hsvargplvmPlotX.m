@@ -40,7 +40,12 @@ if length(dims) > 3
 end
 
 if (isempty(classes) || length(dims) > 2) && ~fancyPlot 
-    hplot = plot_cl(model.layer{layer}.vardist.means, dims, classes, symb);
+    if ~isempty(classes) && size(classes,2) > 1
+        % Labels are given in 1-of-K encoding. Transform to discrete ids
+        hplot = plot_cl(model.layer{layer}.vardist.means, dims, transformLabels(classes), symb);
+    else
+        hplot = plot_cl(model.layer{layer}.vardist.means, dims, classes, symb);
+    end
 else
     if length(dims)~=2
         error('Dims must be 2 for this plot')
@@ -53,7 +58,7 @@ else
     model.layer{layer}.comp{1}.X = model.layer{layer}.vardist.means;
     %figure; ax = axes;
     if model.layer{layer}.comp{1}.q > 2
-        mm = vargplvmReduceModel2(model.layer{layer}.comp{1},2);
+        mm = vargplvmReduceModel2(model.layer{layer}.comp{1},[],dims);
         if ~isempty(classes)
             errors = fgplvmNearestNeighbour(mm, classes);
         end

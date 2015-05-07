@@ -44,7 +44,7 @@ if ~isempty(errors)
     if throwError
         errMsg = [errMsg errors];
         errMsg = [errMsg errStr];
-        error(errMsg);
+        error('hsvagplvm:checkSNR:lowSNR',errMsg);
     end
 else
     for i = 1:length(SNR)

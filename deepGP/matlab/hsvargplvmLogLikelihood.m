@@ -8,6 +8,19 @@ F_entropies = hsvargplvmLogLikelihoodEntropies(model);
 F_parent = hsvargplvmLogLikelihoodParent(model.layer{model.H});
 
 ll = F_leaves + F_nodes + F_entropies + F_parent;
+
+%--- NEW!!! TEST!
+% %{
+for h=1:model.H
+    % If there's a prior on some parameter, add the (minus) corresponding
+    % likelihood.
+    for m=1:model.layer{h}.M
+        ll = ll + vargplvmParamPriorLogProb(model.layer{h}.comp{m});
+    end
+end
+% %}
+%---
+
 end
 
 % The ln p(Y|X) terms

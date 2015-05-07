@@ -68,9 +68,11 @@ while ~isempty(visitOrder)
     axis image
     axis off
     
+    widthLimScale = 2.6; % ORIG: 2
+    heightLimScale = 1.5; % Orig: 1
     if remPoints
-        removePoints = find(abs(mm2.X(visitOrder, 1) - mm2.X(i, 1)) < widthVal/2 ...
-            &  abs(mm2.X(visitOrder, 2) - mm2.X(i, 2)) < heightVal);
+        removePoints = find(abs(mm2.X(visitOrder, 1) - mm2.X(i, 1)) < widthVal/widthLimScale ...
+            &  abs(mm2.X(visitOrder, 2) - mm2.X(i, 2)) < heightVal/heightLimScale);
         visitOrder(removePoints) = [];
     else
         removePoints = find(abs(mm2.X(visitOrder, 1) - mm2.X(i, 1)) < widthVal/50 ...

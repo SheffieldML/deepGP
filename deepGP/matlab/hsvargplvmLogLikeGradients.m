@@ -107,10 +107,26 @@ if ~dynUsed
     % Amend the derivatives of the parent's var.distr. with the terms coming
     % from the KL
     g_parent = hsvargplvmLogLikeGradientsParent(model.layer{model.H});
-    startInd = model.nParams-model.layer{model.H}.nParams+1;
+    startInd = model.nParams-model.layer{model.H}.nParams+1; 
     endInd = startInd + model.layer{model.H}.vardist.nParams-1;
     g(startInd:endInd) = g(startInd:endInd) + g_parent;
 end
+
+
+%--- NEW!! TEST
+% If there are priors on parameters, add the contribution here
+% %{
+c=1;
+for h=1:model.H
+    ind_cur = c:c+model.layer{h}.nParams-1;
+    c=c+length(ind_cur);
+    if model.layer{h}.M > 1
+        error('Not implemented M > 1 yet!');
+    end
+    g(ind_cur) = g(ind_cur) + vargplvmParamPriorGradients(model.layer{h}.comp{1}, length(g(ind_cur)));
+end
+% %}
+%----
 
 % A 'dirty' trick to fix some parameters
 if isfield(model, 'fixParamIndices') && ~isempty(model.fixParamIndices)
