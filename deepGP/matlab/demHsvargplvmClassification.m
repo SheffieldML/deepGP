@@ -21,7 +21,7 @@
 %    
 % demHsvargplvmRegression.m
 %
-% COPYRIGHT: Andreas Damianou, 2014
+% COPYRIGHT: Andreas Damianou, 2014, 2015
 
 %% -- Loading the data. Replace this with your own data if you want
 [Y, lbls] = vargplvmLoadData('oil100');
@@ -73,7 +73,8 @@ end
 %% --- RUN THE ACTUAL DEMO
 demHsvargplvmRegression
 
-%% --- INSPECTION
+%% --- INSPECTION: Plot the latent space with colors showing the class
+% labels
 layer = 2; % Change this to plot another layer
 %hsvargplvmPlotX(model, layer, [],[], [], [], transformLabels(Ytr{1})');
 modelP = model.layer{layer}.comp{1};
@@ -84,7 +85,7 @@ if layer ~= 1
 end
 modelP = vargplvmReduceModel(modelP,2);
 lvmScatterPlot(modelP, Ytr{1});
-%% --- PREDICTIONS
+%% --- PREDICTIONS for test data0
 [Testmeans Testcovars] = vargplvmPredictPoint(model.layer{end}.dynamics, inpXtest);
 [mu, varsigma] = hsvargplvmPosteriorMeanVarSimple(model, Testmeans, Testcovars);
 
