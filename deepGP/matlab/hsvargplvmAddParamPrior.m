@@ -37,4 +37,7 @@ model.layer{h}.comp{m} = vargplvmAddParamPrior(model.layer{h}.comp{m}, paramName
 model.layer{h}.comp{m} = rmfield(model.layer{h}.comp{m}, 'vardist');
 
 % If there are dynamics, the prior index needs fixing
-model.layer{h}.comp{m}.paramPriors{end}.index = model.layer{h}.comp{m}.paramPriors{end}.index + model.layer{end}.dynamics.kern.nParams;
+if isfield(model.layer{end}, 'dynamics')
+    model.layer{h}.comp{m}.paramPriors{end}.index = model.layer{h}.comp{m}.paramPriors{end}.index + model.layer{end}.dynamics.kern.nParams;
+end
+
