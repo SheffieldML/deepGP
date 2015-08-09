@@ -51,8 +51,8 @@ GPiters = 8000;                        % Number of optimisation iterations for G
 % optimistion steps the optimiser will restart (sometimes this helps
 % avoiding local optima).
 if ~exist('initVardistIters','var'), initVardistIters = [1100 1100 1100];   end
-if ~exist('itNo','var'), itNo = [2000 2000 1000 1000 1000 1000 1000 1000 1000 1000 1000 1000 1000 1000 1000]; end
-if ~exist('initSNR','var'), initSNR = {100, 150}; end  % Initial Signal To Noise ration per layer
+if ~exist('itNo','var'), itNo = [2000 repmat(1000, 1,13)]; end
+if ~exist('initSNR','var'), initSNR = {150, 350}; end  % Initial Signal To Noise ration per layer
 
 % Initialise script based on the above variables. This returns a struct
 % "globalOpt" which contains all configuration options
@@ -119,24 +119,18 @@ if ~(exist('runDeepGP') && ~runDeepGP)
         options.Q = Q;
         globalOpt.Q = Q;
         globalOpt.initX = options.initX;
+        Q = oldQ; % Restore Q to its original value
     end
-    Q = oldQ; % Restore Q to its original value
-    options.optimiser = 'scg2';
     
     % Just rewrite all options into a struct of cells
     optionsAll = hsvargplvmCreateOptions(Ytr, options, globalOpt);
-    % Don't mind the following for loop... it just gives the extra possibility
-    % of initialising the latent space with Bayesian GPLVM or GPLVM (see
-    % hsvargplvm_init on how to activate this).
-    initXOptions = cell(1, options.H);
-    for h=1:options.H
-         initXOptions{h} = {};
-    end
+
+    
     %---
     
     % Create the deep GP based on the model options, global options
     % (configuration) and options for initialising the latent spaces X
-    model = hsvargplvmModelCreate(Ytr, options, globalOpt, initXOptions);
+    model = hsvargplvmModelCreate(Ytr, options, globalOpt);
     
     % Since we do regression, we need to add a GP on the parent node. This GP
     % couples the inputs and is parametrised by options in a struct "optionsDyn".
@@ -179,7 +173,7 @@ if ~(exist('runDeepGP') && ~runDeepGP)
         b=meanB*(a+1); % Because mode = b/(a-1)
         model = hsvargplvmAddParamPrior(model, model.H, 1, 'beta', priorName, [a b]);
         if exist('priorScale','var')
-            model.layer{h}.comp{1}.paramPriors{1}.prior.scale = priorScale;
+            model.layer{model.H}.comp{1}.paramPriors{1}.prior.scale = priorScale;
         end
     end   
     

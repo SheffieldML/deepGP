@@ -1,4 +1,6 @@
-function hmodel = hsvargplvmModelCreate(Ytr, options, globalOpt, initXOptions)
+function [hmodel, options, globalOpt, optionsDyn] = hsvargplvmModelCreate(Ytr, options, globalOpt, initXOptions, optionsDyn)
+
+if nargin < 5, optionsDyn = []; end
 
 if nargin < 4 || isempty(initXOptions)
     % These options are passed to the function that initialises X. If it's
@@ -20,6 +22,31 @@ if ~iscell(options.Q)
     for h=1:options.H
         options.Q{h} = Q;
     end
+end
+
+
+if ~iscell(globalOpt.initX) && strcmp(globalOpt.initX, 'inputsOutputs')
+    inpX = optionsDyn.t;
+    options = rmfield(options, 'initX');
+    oldQ = Q; clear Q
+    % Q will be changed, because in this initialisation the Q of the
+    % top layer MUST be the same as the dimensionality of the inputs.
+    for i=options.H:-1:floor(options.H/2)+1
+        options.initX{i} = inpX;
+        Q{i} = size(inpX,2);
+    end
+    optionsDyn.initX = inpX;
+    
+    YtrScaled = scaleData(Ytr{1}, options.scale2var1);
+    Xpca  = ppcaEmbed(YtrScaled, oldQ);
+    for i=1:floor(options.H/2)
+        options.initX{i} = Xpca;
+        Q{i} = oldQ;
+    end
+    options.Q = Q;
+    globalOpt.Q = Q;
+    globalOpt.initX = options.initX;
+    Q = oldQ; % Restore Q to its original value
 end
 
 YtrOrig = Ytr;
@@ -272,3 +299,4 @@ hmodel.options = options;
 hmodel.type = 'hsvargplvm';
 hmodel.parallel = globalOpt.enableParallelism;
 hmodel.checkSNR = globalOpt.checkSNR;
+hmodel.globalOpt = globalOpt;

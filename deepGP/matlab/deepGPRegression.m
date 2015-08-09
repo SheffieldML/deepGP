@@ -127,6 +127,21 @@ model.globalOpt = globalOpt;
 % Computations can be made in parallel, if option is activated
 model.parallel = globalOpt.enableParallelism;
 
+
+% Add a prior on the beta parameter, to avoid low SNR problems.
+if exist('addBetaPrior','var') && addBetaPrior
+    meanSNR = 150; % Where I want the expected value of my inv gamma if it was on SNR
+    priorName = 'invgamma'; % What type of prior
+    varData = var(model.layer{model.H}.comp{1}.mOrig(:));
+    meanB = meanSNR./varData;
+    a=0.08;%1.0001; % Relatively large right-tail
+    b=meanB*(a+1); % Because mode = b/(a-1)
+    model = hsvargplvmAddParamPrior(model, model.H, 1, 'beta', priorName, [a b]);
+    if exist('priorScale','var')
+        model.layer{model.H}.comp{1}.paramPriors{1}.prior.scale = priorScale;
+    end
+end
+    
 fprintf('# Scales after init. latent space:\n')
 hsvargplvmShowScales(model,false);
 %%
