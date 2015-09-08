@@ -116,14 +116,24 @@ end
 %--- NEW!! TEST
 % If there are priors on parameters, add the contribution here
 % %{
-c=1;
+priorFound = 0;
 for h=1:model.H
-    ind_cur = c:c+model.layer{h}.nParams-1;
-    c=c+length(ind_cur);
-    if model.layer{h}.M > 1
-        error('Not implemented M > 1 yet!');
+    for mm=1:model.layer{h}.M
+        if isfield(model.layer{h}.comp{mm}, 'paramPriors') && ~isempty(model.layer{h}.comp{mm}.paramPriors)
+            priorFound = 1;
+        end
     end
-    g(ind_cur) = g(ind_cur) + vargplvmParamPriorGradients(model.layer{h}.comp{1}, length(g(ind_cur)));
+end
+if priorFound
+    c=1;
+    for h=1:model.H
+        ind_cur = c:c+model.layer{h}.nParams-1;
+        c=c+length(ind_cur);
+        if model.layer{h}.M > 1
+            error('Not implemented M > 1 yet!');
+        end
+        g(ind_cur) = g(ind_cur) + vargplvmParamPriorGradients(model.layer{h}.comp{1}, length(g(ind_cur)));
+    end
 end
 % %}
 %----
