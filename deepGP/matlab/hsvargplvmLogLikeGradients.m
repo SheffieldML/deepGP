@@ -116,17 +116,20 @@ end
 %--- NEW!! TEST
 % If there are priors on parameters, add the contribution here
 % %{
-priorFound = 0;
 for h=1:model.H
+    priorFound{h} = 0;
     for mm=1:model.layer{h}.M
         if isfield(model.layer{h}.comp{mm}, 'paramPriors') && ~isempty(model.layer{h}.comp{mm}.paramPriors)
-            priorFound = 1;
+            priorFound{h} = 1;
+            break
         end
     end
 end
-if priorFound
-    c=1;
-    for h=1:model.H
+c=1;
+for h=1:model.H
+    % TODO!!! Perhaps this M>1 should be forbidden if ANY layer has a
+    % prior, check!!
+    if priorFound{h}
         ind_cur = c:c+model.layer{h}.nParams-1;
         c=c+length(ind_cur);
         if model.layer{h}.M > 1
